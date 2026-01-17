@@ -1,0 +1,20 @@
+﻿@model IEnumerable<IBMS.Models.Stock>
+
+<h2>Inventory Report</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Product</th>
+        <th>Available Stock</th>
+        <th>Reorder Level</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Product.ProductName</td>
+            <td>@item.CurrentStock</td>
+            <td>@item.ReorderLevel</td>
+        </tr>
+    }
+</table>
