@@ -1,0 +1,24 @@
+﻿@model IEnumerable<IBMS.Models.Purchase>
+
+<h2>Purchase Report</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Date</th>
+        <th>Supplier</th>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Total</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.PurchaseDate</td>
+            <td>@item.Supplier.SupplierName</td>
+            <td>@item.Product.ProductName</td>
+            <td>@item.Quantity</td>
+            <td>@item.TotalAmount</td>
+        </tr>
+    }
+</table>
