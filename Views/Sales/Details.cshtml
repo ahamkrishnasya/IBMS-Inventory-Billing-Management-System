@@ -1,60 +1,78 @@
 ﻿@model IBMS.Models.Sale
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Sale Details";
 }
 
-<h1>Details</h1>
+<h2 class="mb-3">Details</h2>
 
 <div>
     <h4>Sale</h4>
     <hr />
+
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Quantity)
+
+        <dt class="col-sm-3">
+            Sale Date
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Quantity)
+        <dd class="col-sm-9">
+            @Model.SaleDate.ToString("dd/MM/yyyy")
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SaleDate)
+
+        <dt class="col-sm-3">
+            Customer
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SaleDate)
+        <dd class="col-sm-9">
+            @Model.Customer.CustomerName
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TotalAmount)
+
+        <dt class="col-sm-3">
+            Product
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TotalAmount)
+        <dd class="col-sm-9">
+            @Model.Product.ProductName
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TaxAmount)
+
+        <dt class="col-sm-3">
+            Quantity
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TaxAmount)
+        <dd class="col-sm-9">
+            @Model.Quantity
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NetAmount)
+
+        <dt class="col-sm-3">
+            Total Amount
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NetAmount)
+        <dd class="col-sm-9">
+            @Model.TotalAmount
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Customer)
+
+        <dt class="col-sm-3">
+            Tax Amount
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Customer.Address)
+        <dd class="col-sm-9">
+            @Model.TaxAmount
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Product)
+
+        <dt class="col-sm-3">
+            Net Amount
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Product.Category)
+        <dd class="col-sm-9">
+            @Model.NetAmount
         </dd>
+
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.SaleId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="mt-3">
+    <a asp-action="Edit"
+       asp-route-id="@Model.SaleId"
+       class="btn btn-warning">
+        Edit
+    </a>
+
+    <a asp-action="Index"
+       class="btn btn-secondary ms-2">
+        Back to List
+    </a>
 </div>

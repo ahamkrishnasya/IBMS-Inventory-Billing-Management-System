@@ -6,19 +6,22 @@ namespace IBMS.Models
     {
         public int ProductId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Product name is required")]
         public string ProductName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Category is required")]
         public string Category { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Unit price is required")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Unit price must be greater than 0")]
         public decimal UnitPrice { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Quantity is required")]
+        [Range(0, int.MaxValue, ErrorMessage = "Quantity cannot be negative")]
         public int Quantity { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Tax rate is required")]
+        [Range(0, 100, ErrorMessage = "Tax rate must be between 0 and 100")]
         public decimal TaxRate { get; set; }
     }
 }

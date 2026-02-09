@@ -1,48 +1,39 @@
 ﻿@model IBMS.Models.Purchase
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Purchase Details";
 }
 
-<h1>Details</h1>
+<h2 class="mb-3">Purchase Details</h2>
 
-<div>
-    <h4>Purchase</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Quantity)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Quantity)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PurchaseDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PurchaseDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TotalAmount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TotalAmount)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Supplier)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Supplier.Address)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Product)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Product.Category)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.PurchaseId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="card shadow-sm col-md-6">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">Quantity</dt>
+            <dd class="col-sm-8">@Model.Quantity</dd>
+
+            <dt class="col-sm-4">Purchase Date</dt>
+            <dd class="col-sm-8">@Model.PurchaseDate.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-4">Total Amount</dt>
+            <dd class="col-sm-8">@Model.TotalAmount</dd>
+
+            <dt class="col-sm-4">Supplier</dt>
+            <dd class="col-sm-8">@Model.Supplier.SupplierName</dd>
+
+            <dt class="col-sm-4">Product</dt>
+            <dd class="col-sm-8">@Model.Product.ProductName</dd>
+        </dl>
+
+        <a asp-action="Edit"
+           asp-route-id="@Model.PurchaseId"
+           class="btn btn-warning">
+            Edit
+        </a>
+
+        <a asp-action="Index"
+           class="btn btn-secondary ms-2">
+            Back
+        </a>
+    </div>
 </div>

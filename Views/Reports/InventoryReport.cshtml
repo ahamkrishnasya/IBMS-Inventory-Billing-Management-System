@@ -1,20 +1,39 @@
 ﻿@model IEnumerable<IBMS.Models.Stock>
 
-<h2>Inventory Report</h2>
+@{
+    ViewData["Title"] = "Inventory Report";
+}
 
-<table class="table table-bordered">
-    <tr>
-        <th>Product</th>
-        <th>Available Stock</th>
-        <th>Reorder Level</th>
-    </tr>
+<h2 class="mb-3">Inventory Report</h2>
 
-    @foreach (var item in Model)
-    {
+<div class="d-flex justify-content-end mb-3">
+    <input type="text"
+           id="tableSearch"
+           class="form-control w-25"
+           placeholder="Search inventory..." />
+</div>
+
+<table class="table table-bordered table-striped align-middle" id="dataTable">
+    <thead class="table-dark">
         <tr>
-            <td>@item.Product.ProductName</td>
-            <td>@item.CurrentStock</td>
-            <td>@item.ReorderLevel</td>
+            <th role="button" onclick="sortTable(0)">Product ⬍</th>
+            <th role="button" onclick="sortTable(1)">Available Stock ⬍</th>
+            <th role="button" onclick="sortTable(2)">Reorder Level ⬍</th>
         </tr>
-    }
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Product.ProductName</td>
+                <td>@item.CurrentStock</td>
+                <td>@item.ReorderLevel</td>
+            </tr>
+        }
+    </tbody>
 </table>
+
+@section Scripts {
+    <script src="~/js/global-search.js"></script>
+    <script src="~/js/global-sort.js"></script>
+}

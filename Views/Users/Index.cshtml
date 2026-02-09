@@ -1,0 +1,80 @@
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h2 class="mb-3">Users</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Create" class="btn btn-dark">
+        Create User
+    </a>
+
+    <!-- GLOBAL SEARCH -->
+    <input type="text"
+           id="tableSearch"
+           class="form-control w-25"
+           placeholder="Search users..." />
+</div>
+
+<table class="table table-bordered table-striped align-middle" id="dataTable">
+    <thead class="table-dark">
+        <tr>
+            <th role="button" onclick="sortTable(0)">Email ⬍</th>
+            <th role="button" onclick="sortTable(1)">Username ⬍</th>
+            <th role="button" onclick="sortTable(2)">Status ⬍</th>
+            <th style="width:180px">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            var isInactive = user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.Now;
+
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.UserName</td>
+                <td>
+                    @if (isInactive)
+                    {
+                        <span class="badge bg-danger">Inactive</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                </td>
+                <td class="text-nowrap">
+                    <form asp-action="ToggleStatus"
+                          method="post"
+                          class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@user.Id" />
+
+                        @if (isInactive)
+                        {
+                            <button class="btn btn-sm btn-success">
+                                Activate
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-warning">
+                                Deactivate
+                            </button>
+                        }
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <!-- ONE GLOBAL SEARCH -->
+    <script src="~/js/global-search.js"></script>
+
+    <!-- ONE GLOBAL SORT -->
+    <script src="~/js/global-sort.js"></script>
+}
