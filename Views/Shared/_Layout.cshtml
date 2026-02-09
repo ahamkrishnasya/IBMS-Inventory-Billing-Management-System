@@ -3,58 +3,240 @@
 <head>
     <meta charset="utf-8" />
     <title>@ViewData["Title"] - IBMS</title>
-
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Bootstrap CSS (local) -->
     <link rel="stylesheet" href="~/css/bootstrap-5.3.8-dist/css/bootstrap.min.css" />
-
-    <!-- Your custom CSS -->
     <link rel="stylesheet" href="~/css/site.css" />
+
+
+    <style>
+        body {
+            overflow-x: hidden;
+            margin: 0;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 240px;
+            background: #212529;
+            color: #fff;
+            transition: width .3s ease;
+            overflow-y: auto;
+            z-index: 1030;
+        }
+
+            .sidebar.collapsed {
+                width: 70px;
+            }
+
+            .sidebar .nav-link {
+                color: #fff;
+                padding: 10px 15px;
+                white-space: nowrap;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+                .sidebar .nav-link:hover {
+                    background: #343a40;
+                }
+
+                .sidebar .nav-link:focus,
+                .sidebar .nav-link:active {
+                    background: none !important;
+                    outline: none !important;
+                    box-shadow: none !important;
+                }
+
+            .sidebar span {
+                transition: opacity .2s ease;
+            }
+
+            .sidebar.collapsed span {
+                opacity: 0;
+                width: 0;
+                overflow: hidden;
+            }
+
+        /* ===== MENU BUTTON ===== */
+        #sidebarToggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+            border: 1px solid #6c757d;
+            color: #fff;
+        }
+
+            #sidebarToggle:focus,
+            #sidebarToggle:active {
+                outline: none !important;
+                box-shadow: none !important;
+            }
+
+        /* ===== REPORT ARROW ===== */
+        .report-arrow {
+            margin-left: auto;
+            transition: transform .3s ease;
+        }
+
+        a[aria-expanded="true"] .report-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* ===== CONTENT ===== */
+        .content-wrapper {
+            margin-left: 70px;
+            min-height: 100vh;
+            background: #f8f9fa;
+            transition: margin-left .3s ease;
+        }
+
+        .sidebar:not(.collapsed) ~ .content-wrapper {
+            margin-left: 240px;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            background: #fff;
+            border-bottom: 1px solid #dee2e6;
+            height: 56px;
+        }
+
+        /* ===== ALERT ===== */
+        .alert {
+            transition: opacity .3s ease;
+        }
+    </style>
 </head>
+
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
-                IBMS
-            </a>
+    @if (TempData["AlertMessage"] != null)
+    {
+        var type = TempData["AlertType"] ?? "info";
+        <div id="autoAlert" class="alert alert-@type text-center mb-0 rounded-0">
+            @TempData["AlertMessage"]
+        </div>
+    }
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#mainNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <!-- ===== SIDEBAR ===== -->
+        <aside id="sidebar" class="sidebar collapsed p-3">
+            <ul class="nav flex-column gap-1">
 
-            <div class="collapse navbar-collapse" id="mainNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Home" asp-action="Index">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Products" asp-action="Index">Products</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Sales" asp-action="Index">Sales</a>
-                    </li>
-                </ul>
+                <button id="sidebarToggle" class="btn btn-sm mb-3">
+                    ☰ <span>Menu</span>
+                </button>
 
-                <partial name="_LoginPartial" />
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Products" asp-action="Index">📦 <span>Products</span></a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Customers" asp-action="Index">👥 <span>Customers</span></a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Sales" asp-action="Index">💰 <span>Sales</span></a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Purchases" asp-action="Index">🛒 <span>Purchases</span></a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Suppliers" asp-action="Index">🚚 <span>Suppliers</span></a>
+                </li>
+
+                <!-- REPORTS -->
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#reportsMenu" aria-expanded="false">
+                        📑 <span>Reports</span>
+                        <span class="report-arrow">▾</span>
+                    </a>
+
+                    <div class="collapse ps-3" id="reportsMenu">
+                        <a class="nav-link" asp-controller="Reports" asp-action="SalesReport"><span>Sales Report</span></a>
+                        <a class="nav-link" asp-controller="Reports" asp-action="PurchaseReport"><span>Purchase Report</span></a>
+                        <a class="nav-link" asp-controller="Reports" asp-action="InventoryReport"><span>Inventory Report</span></a>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Users" asp-action="Index">🧑‍💻 <span>Users</span></a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- ===== CONTENT ===== -->
+        <div class="content-wrapper">
+
+            <div class="top-bar d-flex justify-content-between align-items-center px-3">
+                <a asp-controller="Home" asp-action="Index"
+                   class="fw-bold text-decoration-none text-dark fs-5">IBMS</a>
+
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fw-semibold">@User.Identity.Name</span>
+
+                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                        <button type="submit"
+                                class="btn btn-link text-danger text-decoration-none p-0">
+                            🚪 Logout
+                        </button>
+                    </form>
+                </div>
             </div>
+
+            <main class="container-fluid p-4">
+                @RenderBody()
+            </main>
+
+            <footer class="text-center text-muted py-3 border-top">
+                © 2026 - IBMS
+            </footer>
         </div>
-    </nav>
+    }
+    else
+    {
+        <main class="container mt-5">
+            @RenderBody()
+        </main>
+    }
 
-    <main class="container mt-4">
-        @RenderBody()
-    </main>
-
-    <footer class="border-top footer text-muted mt-5">
-        <div class="container text-center">
-            © 2026 - IBMS
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS (bundle includes Popper) -->
     <script src="~/css/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/delete-modal.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const sidebar = document.getElementById("sidebar");
+            const toggle = document.getElementById("sidebarToggle");
+
+            toggle.addEventListener("mousedown", e => e.preventDefault());
+
+            toggle.addEventListener("click", () => {
+                sidebar.classList.toggle("collapsed");
+            });
+        });
+
+        setTimeout(() => {
+            const alert = document.getElementById("autoAlert");
+            if (alert) {
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 300);
+            }
+        }, 2500);
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 

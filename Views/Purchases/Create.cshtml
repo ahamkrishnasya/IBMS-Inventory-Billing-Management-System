@@ -1,51 +1,70 @@
-﻿@model IBMS.Models.Purchase
+﻿@model IBMS.Models.DTOs.PurchaseDto
+@using System.Text.Json
 
-@{
-    ViewData["Title"] = "Create";
-}
+<h2>Create Purchase</h2>
 
-<h1>Create</h1>
+<form method="post" class="col-md-6">
 
-<h4>Purchase</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="SupplierId" class="control-label"></label>
-                <select asp-for="SupplierId" class ="form-control" asp-items="ViewBag.SupplierId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProductId" class="control-label"></label>
-                <select asp-for="ProductId" class ="form-control" asp-items="ViewBag.ProductId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Quantity" class="control-label"></label>
-                <input asp-for="Quantity" class="form-control" />
-                <span asp-validation-for="Quantity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PurchaseDate" class="control-label"></label>
-                <input asp-for="PurchaseDate" class="form-control" />
-                <span asp-validation-for="PurchaseDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalAmount" class="control-label"></label>
-                <input asp-for="TotalAmount" class="form-control" />
-                <span asp-validation-for="TotalAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    <div class="mb-3">
+        <label>Supplier</label>
+        <select asp-for="SupplierId"
+                asp-items="Model.SupplierList"
+                class="form-select">
+            <option value="">-- Select Supplier --</option>
+        </select>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div class="mb-3">
+        <label>Product</label>
+        <select asp-for="ProductId"
+                asp-items="Model.ProductList"
+                class="form-select"
+                id="ProductId">
+            <option value="">-- Select Product --</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Rate</label>
+        <input id="Rate" class="form-control" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label>Quantity</label>
+        <input asp-for="Quantity" class="form-control" id="Quantity" />
+    </div>
+
+    <div class="mb-3">
+        <label>Total</label>
+        <input asp-for="TotalAmount"
+               class="form-control"
+               id="TotalAmount"
+               readonly />
+    </div>
+
+    <button type="submit" class="btn btn-dark">Save</button>
+</form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        const productPrices = @Html.Raw(JsonSerializer.Serialize(Model.ProductPrices ?? new Dictionary<int, decimal>()));
+
+        const productSelect = document.getElementById("ProductId");
+        const quantityInput = document.getElementById("Quantity");
+        const rateInput = document.getElementById("Rate");
+        const totalInput = document.getElementById("TotalAmount");
+
+        function calculate() {
+            const productId = productSelect.value;
+            const rate = productPrices[productId] || 0;
+            const qty = parseFloat(quantityInput.value || 0);
+
+            rateInput.value = rate.toFixed(2);
+            totalInput.value = (rate * qty).toFixed(2);
+        }
+
+        productSelect.addEventListener("change", calculate);
+        quantityInput.addEventListener("input", calculate);
+        calculate();
+    </script>
 }

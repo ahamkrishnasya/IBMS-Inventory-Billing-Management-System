@@ -1,71 +1,69 @@
 ﻿@model IEnumerable<IBMS.Models.Sale>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Sales";
 }
 
-<h1>Index</h1>
+<h2 class="mb-3">Sales</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Create" class="btn btn-dark">Add Sale</a>
+
+    <input type="text"
+           id="tableSearch"
+           class="form-control w-25"
+           placeholder="Search sales..." />
+</div>
+
+<table class="table table-bordered table-striped align-middle" id="dataTable">
+    <thead class="table-dark">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SaleDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TotalAmount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaxAmount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NetAmount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Customer)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Product)
-            </th>
-            <th></th>
+            <th role="button" onclick="sortTable(0)">Date ⬍</th>
+            <th role="button" onclick="sortTable(1)">Customer ⬍</th>
+            <th role="button" onclick="sortTable(2)">Product ⬍</th>
+            <th role="button" onclick="sortTable(3)">Qty ⬍</th>
+            <th role="button" onclick="sortTable(4)">Net ⬍</th>
+            <th style="width:180px">Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SaleDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaxAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NetAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Customer.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Product.Category)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.SaleId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.SaleId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.SaleId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.SaleDate.ToString("dd/MM/yyyy")</td>
+                <td>@s.Customer.CustomerName</td>
+                <td>@s.Product.ProductName</td>
+                <td>@s.Quantity</td>
+                <td>@s.NetAmount</td>
+                <td class="text-nowrap">
+                    <div class="d-flex gap-2">
+                        <a asp-action="Details"
+                           asp-route-id="@s.SaleId"
+                           class="btn btn-sm btn-info">Details</a>
+
+                        <a asp-action="Edit"
+                           asp-route-id="@s.SaleId"
+                           class="btn btn-sm btn-warning">Edit</a>
+
+                        <button class="btn btn-sm btn-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalDeleteModal"
+                                data-id="@s.SaleId"
+                                data-name="@s.Product.ProductName"
+                                data-action="@Url.Action("DeleteConfirmed", "Sales")">
+                            Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<partial name="_DeleteModal" />
+
+@section Scripts {
+    <script src="~/js/global-search.js"></script>
+    <script src="~/js/global-sort.js"></script>
+    <script src="~/js/delete-modal.js"></script>
+}

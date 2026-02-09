@@ -1,17 +1,20 @@
-﻿using System;
+﻿using IBMS.Data;
+using IBMS.Models;
+using IBMS.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using IBMS.Data;
-using IBMS.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 
 namespace IBMS.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class PurchasesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -24,8 +27,10 @@ namespace IBMS.Controllers
         // GET: Purchases
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Purchases.Include(p => p.Product).Include(p => p.Supplier);
-            return View(await applicationDbContext.ToListAsync());
+            return View(await _context.Purchases
+                .Include(p => p.Product)
+                .Include(p => p.Supplier)
+                .ToListAsync());
         }
 
         // GET: Purchases/Details/5
@@ -51,98 +56,126 @@ namespace IBMS.Controllers
         // GET: Purchases/Create
         public IActionResult Create()
         {
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "SupplierName");
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
-            return View();
-        }
+            var data = new PurchaseDto
+            {
+                PurchaseDate = DateTime.UtcNow.Date,
+                SupplierList = _context.Suppliers
+                    .Select(s => new SelectListItem
+                    {
+                        Value = s.SupplierId.ToString(),
+                        Text = s.SupplierName
+                    }).ToList(),
 
+                ProductList = _context.Products
+                    .Select(p => new SelectListItem
+                    {
+                        Value = p.ProductId.ToString(),
+                        Text = p.ProductName
+                    }).ToList(),
+
+                ProductPrices = _context.Products
+                    .ToDictionary(p => p.ProductId, p => p.UnitPrice)
+            };
+            return View(data);
+        }
 
         // POST: Purchases/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PurchaseId,SupplierId,ProductId,Quantity,PurchaseDate,TotalAmount")] Purchase purchase)
+        public async Task<IActionResult> Create(PurchaseDto dto)
         {
-            if (ModelState.IsValid)
+            var product = await _context.Products.FindAsync(dto.ProductId);
+
+            var purchase = new Purchase
             {
-                purchase.PurchaseDate = DateTime.Now;
+                SupplierId = dto.SupplierId,
+                ProductId = dto.ProductId,
+                Quantity = dto.Quantity,
+                PurchaseDate = DateTime.Now,
+                TotalAmount = product.UnitPrice * dto.Quantity 
+            };
 
-                var product = _context.Products.FirstOrDefault(p => p.ProductId == purchase.ProductId);
-                purchase.TotalAmount = product.UnitPrice * purchase.Quantity;
+            _context.Purchases.Add(purchase);
 
-                _context.Purchases.Add(purchase);
-                await _context.SaveChangesAsync();
+            var stock = await _context.Stocks
+                .FirstOrDefaultAsync(s => s.ProductId == dto.ProductId);
 
-                // UPDATE STOCK
-                var stock = _context.Stocks.FirstOrDefault(s => s.ProductId == purchase.ProductId);
-                if (stock != null)
+            if (stock == null)
+            {
+                _context.Stocks.Add(new Stock
                 {
-                    stock.CurrentStock += purchase.Quantity;
-                }
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
+                    ProductId = dto.ProductId,
+                    CurrentStock = dto.Quantity,
+                    ReorderLevel = 10
+                });
             }
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "Category", purchase.ProductId);
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "Address", purchase.SupplierId);
-            return View(purchase);
+            else
+            {
+                stock.CurrentStock += dto.Quantity;
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Purchases/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
+        // GET: Purchases/Edit/Id
+        public async Task<IActionResult> Edit(int id)
+        {
             var purchase = await _context.Purchases.FindAsync(id);
-            if (purchase == null)
+            if (purchase == null) return NotFound();
+
+            var data = new PurchaseDto
             {
-                return NotFound();
-            }
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "Category", purchase.ProductId);
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "Address", purchase.SupplierId);
-            return View(purchase);
+                PurchaseId = purchase.PurchaseId,
+                SupplierId = purchase.SupplierId,
+                ProductId = purchase.ProductId,
+                Quantity = purchase.Quantity,
+                PurchaseDate = purchase.PurchaseDate.Date,
+                TotalAmount = purchase.TotalAmount,
+
+                SupplierList = _context.Suppliers
+                    .Select(s => new SelectListItem
+                    {
+                        Value = s.SupplierId.ToString(),
+                        Text = s.SupplierName
+                    }).ToList(),
+
+                ProductList = _context.Products
+                    .Select(p => new SelectListItem
+                    {
+                        Value = p.ProductId.ToString(),
+                        Text = p.ProductName
+                    }).ToList(),
+
+                ProductPrices = _context.Products
+                    .ToDictionary(p => p.ProductId, p => p.UnitPrice)
+            };
+            return View(data);
         }
 
-        // POST: Purchases/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+        // POST: Purchases/Edit/Id
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PurchaseId,SupplierId,ProductId,Quantity,PurchaseDate,TotalAmount")] Purchase purchase)
+        public async Task<IActionResult> Edit(PurchaseDto dto)
         {
-            if (id != purchase.PurchaseId)
-            {
-                return NotFound();
-            }
+            var purchase = await _context.Purchases.FindAsync(dto.PurchaseId);
+            var product = await _context.Products.FindAsync(dto.ProductId);
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(purchase);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PurchaseExists(purchase.PurchaseId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "Category", purchase.ProductId);
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "Address", purchase.SupplierId);
-            return View(purchase);
+            if (purchase == null || product == null)
+                return NotFound();
+
+            purchase.SupplierId = dto.SupplierId;
+            purchase.ProductId = dto.ProductId;
+            purchase.Quantity = dto.Quantity;
+            purchase.PurchaseDate = dto.PurchaseDate;
+            purchase.TotalAmount = product.UnitPrice * dto.Quantity;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
+
 
         // GET: Purchases/Delete/5
         public async Task<IActionResult> Delete(int? id)

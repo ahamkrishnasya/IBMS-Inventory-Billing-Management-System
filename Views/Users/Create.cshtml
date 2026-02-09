@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Create User";
+}
+
+<h2 class="mb-4">Create User</h2>
+
+<div class="card shadow-sm col-md-6">
+    <div class="card-body">
+        <form method="post">
+
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input name="email"
+                       type="email"
+                       class="form-control"
+                       required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input name="password"
+                       type="password"
+                       class="form-control"
+                       required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Role</label>
+                <select name="role" class="form-select">
+                    @foreach (var role in ViewBag.Roles)
+                    {
+                        <option value="@role.Name">@role.Name</option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-dark">
+                Create
+            </button>
+
+            <a asp-action="Index" class="btn btn-secondary ms-2">
+                Back
+            </a>
+
+        </form>
+    </div>
+</div>

@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using IBMS.Data;
+using IBMS.Models;
+using IBMS.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using IBMS.Data;
-using IBMS.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
-
 
 namespace IBMS.Controllers
 {
+    [Authorize(Roles = "Admin,Staff")]
     public class SalesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,183 +18,211 @@ namespace IBMS.Controllers
             _context = context;
         }
 
-        // GET: Sales
+        // ================= INDEX =================
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Sales.Include(s => s.Customer).Include(s => s.Product);
-            return View(await applicationDbContext.ToListAsync());
+            var sales = await _context.Sales
+                .Include(s => s.Customer)
+                .Include(s => s.Product)
+                .OrderByDescending(s => s.SaleDate)
+                .ToListAsync();
+
+            return View(sales);
         }
 
-        // GET: Sales/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // ================= DETAILS =================
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var sale = await _context.Sales
                 .Include(s => s.Customer)
                 .Include(s => s.Product)
-                .FirstOrDefaultAsync(m => m.SaleId == id);
+                .FirstOrDefaultAsync(s => s.SaleId == id);
+
             if (sale == null)
-            {
                 return NotFound();
-            }
 
             return View(sale);
         }
 
-        // GET: Sales/Create
+        // ================= CREATE (GET) =================
         public IActionResult Create()
         {
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "CustomerName");
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
-            return View();
+            return View(new SaleDto
+            {
+                SaleDate = DateTime.UtcNow.Date,
+
+                CustomerList = new SelectList(
+                    _context.Customers,
+                    "CustomerId",
+                    "CustomerName"
+                ),
+
+                ProductList = new SelectList(
+                    _context.Products,
+                    "ProductId",
+                    "ProductName"
+                ),
+
+                ProductPrices = _context.Products
+                    .ToDictionary(p => p.ProductId, p => p.UnitPrice),
+
+                ProductTaxRates = _context.Products
+                    .ToDictionary(p => p.ProductId, p => p.TaxRate)
+            });
         }
 
-
-        // POST: Sales/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // ================= CREATE (POST) =================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SaleId,CustomerId,ProductId,Quantity,SaleDate,TotalAmount,TaxAmount,NetAmount")] Sale sale)
+        public async Task<IActionResult> Create(SaleDto dto)
         {
-            if (ModelState.IsValid)
+            var product = await _context.Products.FindAsync(dto.ProductId);
+            var stock = await _context.Stocks.FirstOrDefaultAsync(s => s.ProductId == dto.ProductId);
+
+            if (product == null || stock == null || stock.CurrentStock < dto.Quantity)
             {
-                sale.SaleDate = DateTime.Now;
+                ModelState.AddModelError("", "Insufficient stock.");
 
-                var product = _context.Products.FirstOrDefault(p => p.ProductId == sale.ProductId);
+                dto.CustomerList = new SelectList(_context.Customers, "CustomerId", "CustomerName", dto.CustomerId);
+                dto.ProductList = new SelectList(_context.Products, "ProductId", "ProductName", dto.ProductId);
+                dto.ProductPrices = _context.Products.ToDictionary(p => p.ProductId, p => p.UnitPrice);
+                dto.ProductTaxRates = _context.Products.ToDictionary(p => p.ProductId, p => p.TaxRate);
 
-                sale.TotalAmount = product.UnitPrice * sale.Quantity;
-                sale.TaxAmount = (sale.TotalAmount * product.TaxRate) / 100;
-                sale.NetAmount = sale.TotalAmount + sale.TaxAmount;
-
-                // SAVE SALE
-                _context.Sales.Add(sale);
-                await _context.SaveChangesAsync();
-
-                // UPDATE STOCK
-                var stock = _context.Stocks.FirstOrDefault(s => s.ProductId == sale.ProductId);
-                if (stock != null)
-                {
-                    stock.CurrentStock -= sale.Quantity;
-                }
-                await _context.SaveChangesAsync();
-
-                // CREATE INVOICE
-                var invoice = new Invoice
-                {
-                    SaleId = sale.SaleId,
-                    InvoiceDate = DateTime.Now,
-                    PaymentMode = "Cash",
-                    InvoiceTotal = sale.NetAmount
-                };
-
-                _context.Invoices.Add(invoice);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "Address", sale.CustomerId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "Category", sale.ProductId);
-            return View(sale);
-        }
-
-        // GET: Sales/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
+                return View(dto);
             }
 
-            var sale = await _context.Sales.FindAsync(id);
-            if (sale == null)
-            {
-                return NotFound();
-            }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "Address", sale.CustomerId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "Category", sale.ProductId);
-            return View(sale);
-        }
+            decimal total = product.UnitPrice * dto.Quantity;
+            decimal tax = (total * product.TaxRate) / 100;
 
-        // POST: Sales/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("SaleId,CustomerId,ProductId,Quantity,SaleDate,TotalAmount,TaxAmount,NetAmount")] Sale sale)
-        {
-            if (id != sale.SaleId)
+            var sale = new Sale
             {
-                return NotFound();
-            }
+                CustomerId = dto.CustomerId,
+                ProductId = dto.ProductId,
+                Quantity = dto.Quantity,
+                SaleDate = DateTime.Now,
+                TotalAmount = total,
+                TaxAmount = tax,
+                NetAmount = total + tax
+            };
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(sale);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SaleExists(sale.SaleId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "Address", sale.CustomerId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "Category", sale.ProductId);
-            return View(sale);
-        }
-
-        // GET: Sales/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var sale = await _context.Sales
-                .Include(s => s.Customer)
-                .Include(s => s.Product)
-                .FirstOrDefaultAsync(m => m.SaleId == id);
-            if (sale == null)
-            {
-                return NotFound();
-            }
-
-            return View(sale);
-        }
-
-        // POST: Sales/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var sale = await _context.Sales.FindAsync(id);
-            if (sale != null)
-            {
-                _context.Sales.Remove(sale);
-            }
+            _context.Sales.Add(sale);
+            stock.CurrentStock -= dto.Quantity;
 
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
-        private bool SaleExists(int id)
+        // ================= EDIT (GET) =================
+        public async Task<IActionResult> Edit(int id)
         {
-            return _context.Sales.Any(e => e.SaleId == id);
+            var sale = await _context.Sales.FindAsync(id);
+            if (sale == null)
+                return NotFound();
+
+            return View(new SaleDto
+            {
+                SaleId = sale.SaleId,
+                CustomerId = sale.CustomerId,
+                ProductId = sale.ProductId,
+                Quantity = sale.Quantity,
+                SaleDate = sale.SaleDate,
+                TotalAmount = sale.TotalAmount,
+                TaxAmount = sale.TaxAmount,
+                NetAmount = sale.NetAmount,
+
+                CustomerList = new SelectList(
+                    _context.Customers,
+                    "CustomerId",
+                    "CustomerName",
+                    sale.CustomerId
+                ),
+
+                ProductList = new SelectList(
+                    _context.Products,
+                    "ProductId",
+                    "ProductName",
+                    sale.ProductId
+                ),
+
+                ProductPrices = _context.Products
+                    .ToDictionary(p => p.ProductId, p => p.UnitPrice),
+
+                ProductTaxRates = _context.Products
+                    .ToDictionary(p => p.ProductId, p => p.TaxRate)
+            });
         }
+
+        // ================= EDIT (POST) =================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(SaleDto dto)
+        {
+            var sale = await _context.Sales.FindAsync(dto.SaleId);
+            if (sale == null)
+                return NotFound();
+
+            var product = await _context.Products.FindAsync(dto.ProductId);
+            var stock = await _context.Stocks.FirstOrDefaultAsync(s => s.ProductId == dto.ProductId);
+
+            if (product == null || stock == null)
+                return NotFound();
+
+            // restore old stock
+            stock.CurrentStock += sale.Quantity;
+
+            if (stock.CurrentStock < dto.Quantity)
+            {
+                ModelState.AddModelError("", "Insufficient stock.");
+
+                dto.CustomerList = new SelectList(_context.Customers, "CustomerId", "CustomerName", dto.CustomerId);
+                dto.ProductList = new SelectList(_context.Products, "ProductId", "ProductName", dto.ProductId);
+                dto.ProductPrices = _context.Products.ToDictionary(p => p.ProductId, p => p.UnitPrice);
+                dto.ProductTaxRates = _context.Products.ToDictionary(p => p.ProductId, p => p.TaxRate);
+
+                return View(dto);
+            }
+
+            decimal total = product.UnitPrice * dto.Quantity;
+            decimal tax = (total * product.TaxRate) / 100;
+
+            sale.Quantity = dto.Quantity;
+            sale.TotalAmount = total;
+            sale.TaxAmount = tax;
+            sale.NetAmount = total + tax;
+
+            stock.CurrentStock -= dto.Quantity;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+        // ================= DELETE (POST ONLY – MODAL) =================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var sale = await _context.Sales
+                .Include(s => s.Product)
+                .FirstOrDefaultAsync(s => s.SaleId == id);
+
+            if (sale == null)
+                return NotFound();
+
+            // restore stock
+            var stock = await _context.Stocks
+                .FirstOrDefaultAsync(s => s.ProductId == sale.ProductId);
+
+            if (stock != null)
+            {
+                stock.CurrentStock += sale.Quantity;
+            }
+
+            _context.Sales.Remove(sale);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

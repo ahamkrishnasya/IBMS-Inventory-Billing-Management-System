@@ -1,28 +1,41 @@
-﻿@{
-    Layout = "_Layout";
-}
+﻿<h2 class="mb-4">Dashboard</h2>
 
-<h2>Dashboard</h2>
+<div class="row g-4">
 
-<div class="row">
-    <div class="col-md-4">
-        <div class="card p-3">
-            <h4>Total Products</h4>
-            <p>@ViewBag.TotalProducts</p>
+    <div class="col-md-3">
+        <div class="card bg-primary text-white shadow">
+            <div class="card-body">
+                <h6>Total Products</h6>
+                <h3>@ViewBag.TotalProducts</h3>
+            </div>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card p-3">
-            <h4>Total Sales</h4>
-            <p>@ViewBag.TotalSales</p>
+    <div class="col-md-3">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body">
+                <h6>Total Sales</h6>
+                <h3>₹ @ViewBag.TotalSales</h3>
+            </div>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card p-3">
-            <h4>Low Stock Items</h4>
-            <p>@ViewBag.LowStock</p>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark shadow">
+            <div class="card-body">
+                <h6>Low Stock</h6>
+                <h3>@ViewBag.LowStock</h3>
+            </div>
         </div>
     </div>
+
+    <div class="col-md-3">
+        <div class="card bg-dark text-white shadow">
+            <div class="card-body">
+                <h6>Customers</h6>
+                <h3>@ViewBag.TotalCustomers</h3>
+            </div>
+        </div>
+    </div>
+
 </div>

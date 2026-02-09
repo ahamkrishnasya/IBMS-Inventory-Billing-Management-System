@@ -1,24 +1,43 @@
 ﻿@model IEnumerable<IBMS.Models.Purchase>
 
-<h2>Purchase Report</h2>
+@{
+    ViewData["Title"] = "Purchase Report";
+}
 
-<table class="table table-bordered">
-    <tr>
-        <th>Date</th>
-        <th>Supplier</th>
-        <th>Product</th>
-        <th>Quantity</th>
-        <th>Total</th>
-    </tr>
+<h2 class="mb-3">Purchase Report</h2>
 
-    @foreach (var item in Model)
-    {
+<div class="d-flex justify-content-end mb-3">
+    <input type="text"
+           id="tableSearch"
+           class="form-control w-25"
+           placeholder="Search purchases..." />
+</div>
+
+<table class="table table-bordered table-striped align-middle" id="dataTable">
+    <thead class="table-dark">
         <tr>
-            <td>@item.PurchaseDate</td>
-            <td>@item.Supplier.SupplierName</td>
-            <td>@item.Product.ProductName</td>
-            <td>@item.Quantity</td>
-            <td>@item.TotalAmount</td>
+            <th role="button" onclick="sortTable(0)">Date ⬍</th>
+            <th role="button" onclick="sortTable(1)">Supplier ⬍</th>
+            <th role="button" onclick="sortTable(2)">Product ⬍</th>
+            <th role="button" onclick="sortTable(3)">Quantity ⬍</th>
+            <th role="button" onclick="sortTable(4)">Total ⬍</th>
         </tr>
-    }
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.PurchaseDate.ToString("dd/MM/yyyy")</td>
+                <td>@item.Supplier.SupplierName</td>
+                <td>@item.Product.ProductName</td>
+                <td>@item.Quantity</td>
+                <td>@item.TotalAmount</td>
+            </tr>
+        }
+    </tbody>
 </table>
+
+@section Scripts {
+    <script src="~/js/global-search.js"></script>
+    <script src="~/js/global-sort.js"></script>
+}

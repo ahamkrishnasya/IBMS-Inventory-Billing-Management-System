@@ -1,54 +1,124 @@
-﻿@model IBMS.Models.Purchase
+﻿@model IBMS.Models.DTOs.PurchaseDto
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Purchase";
 }
 
-<h1>Edit</h1>
+<h2 class="mb-4">Edit Purchase</h2>
 
-<h4>Purchase</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="card shadow-sm col-md-6">
+    <div class="card-body">
+
+        <form asp-action="Edit" method="post">
+
+            @Html.AntiForgeryToken()
+
             <input type="hidden" asp-for="PurchaseId" />
-            <div class="form-group">
-                <label asp-for="SupplierId" class="control-label"></label>
-                <select asp-for="SupplierId" class="form-control" asp-items="ViewBag.SupplierId"></select>
-                <span asp-validation-for="SupplierId" class="text-danger"></span>
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3"></div>
+
+            <!-- SUPPLIER -->
+            <div class="mb-3">
+                <label class="form-label">Supplier</label>
+                <select asp-for="SupplierId"
+                        asp-items="Model.SupplierList"
+                        class="form-select">
+                    <option value="">-- Select Supplier --</option>
+                </select>
+                <span asp-validation-for="SupplierId"
+                      class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ProductId" class="control-label"></label>
-                <select asp-for="ProductId" class="form-control" asp-items="ViewBag.ProductId"></select>
-                <span asp-validation-for="ProductId" class="text-danger"></span>
+
+            <!-- PRODUCT -->
+            <div class="mb-3">
+                <label class="form-label">Product</label>
+                <select asp-for="ProductId"
+                        asp-items="Model.ProductList"
+                        class="form-select"
+                        id="ProductId">
+                    <option value="">-- Select Product --</option>
+                </select>
+                <span asp-validation-for="ProductId"
+                      class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Quantity" class="control-label"></label>
-                <input asp-for="Quantity" class="form-control" />
-                <span asp-validation-for="Quantity" class="text-danger"></span>
+
+            <!-- RATE -->
+            <div class="mb-3">
+                <label class="form-label">Rate</label>
+                <input type="text"
+                       id="Rate"
+                       class="form-control"
+                       readonly />
             </div>
-            <div class="form-group">
-                <label asp-for="PurchaseDate" class="control-label"></label>
-                <input asp-for="PurchaseDate" class="form-control" />
-                <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+
+            <!-- QUANTITY -->
+            <div class="mb-3">
+                <label asp-for="Quantity" class="form-label"></label>
+                <input asp-for="Quantity"
+                       class="form-control"
+                       id="Quantity" />
+                <span asp-validation-for="Quantity"
+                      class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="TotalAmount" class="control-label"></label>
-                <input asp-for="TotalAmount" class="form-control" />
-                <span asp-validation-for="TotalAmount" class="text-danger"></span>
+
+            <!-- DATE -->
+            <div class="mb-3">
+                <label asp-for="PurchaseDate" class="form-label"></label>
+                <input asp-for="PurchaseDate"
+                       type="date"
+                       class="form-control" />
+                <span asp-validation-for="PurchaseDate"
+                      class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <!-- TOTAL -->
+            <div class="mb-3">
+                <label asp-for="TotalAmount" class="form-label"></label>
+                <input asp-for="TotalAmount"
+                       class="form-control"
+                       id="TotalAmount"
+                       readonly />
             </div>
+
+            <button type="submit" class="btn btn-dark">
+                Update
+            </button>
+
+            <a asp-action="Index"
+               class="btn btn-secondary ms-2">
+                Back
+            </a>
+
         </form>
+
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const productRates =
+            @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProductPrices));
+
+        const productSelect = document.getElementById("ProductId");
+        const qtyInput = document.getElementById("Quantity");
+        const rateInput = document.getElementById("Rate");
+        const totalInput = document.getElementById("TotalAmount");
+
+        function calculate() {
+            const pid = productSelect.value;
+            const rate = productRates[pid] || 0;
+            const qty = parseFloat(qtyInput.value || 0);
+
+            rateInput.value = rate.toFixed(2);
+            totalInput.value = (rate * qty).toFixed(2);
+        }
+
+        productSelect.addEventListener("change", calculate);
+        qtyInput.addEventListener("input", calculate);
+
+        calculate(); // initial load
+    </script>
 }
