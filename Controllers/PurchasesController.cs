@@ -4,12 +4,7 @@ using IBMS.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 
 namespace IBMS.Controllers
@@ -24,7 +19,8 @@ namespace IBMS.Controllers
             _context = context;
         }
 
-        // GET: Purchases
+        //get purchases
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Purchases
@@ -33,7 +29,8 @@ namespace IBMS.Controllers
                 .ToListAsync());
         }
 
-        // GET: Purchases/Details/5
+        //get purchase by id
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -53,7 +50,8 @@ namespace IBMS.Controllers
             return View(purchase);
         }
 
-        // GET: Purchases/Create
+        //add purchase get
+        [HttpGet]
         public IActionResult Create()
         {
             var data = new PurchaseDto
@@ -76,10 +74,13 @@ namespace IBMS.Controllers
                 ProductPrices = _context.Products
                     .ToDictionary(p => p.ProductId, p => p.UnitPrice)
             };
+
+            TempData["AlertMessage"] = "Purchase created successfully.";
+            TempData["AlertType"] = "success";
             return View(data);
         }
 
-        // POST: Purchases/Create
+        //add product post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PurchaseDto dto)
@@ -119,7 +120,8 @@ namespace IBMS.Controllers
         }
 
 
-        // GET: Purchases/Edit/Id
+        //edit product get
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var purchase = await _context.Purchases.FindAsync(id);
@@ -155,7 +157,7 @@ namespace IBMS.Controllers
         }
 
 
-        // POST: Purchases/Edit/Id
+        //edit product post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(PurchaseDto dto)
@@ -173,11 +175,14 @@ namespace IBMS.Controllers
             purchase.TotalAmount = product.UnitPrice * dto.Quantity;
 
             await _context.SaveChangesAsync();
+
+            TempData["AlertMessage"] = "Purchase updated successfully.";
+            TempData["AlertType"] = "success";
             return RedirectToAction(nameof(Index));
         }
 
 
-        // GET: Purchases/Delete/5
+        //
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -197,7 +202,7 @@ namespace IBMS.Controllers
             return View(purchase);
         }
 
-        // POST: Purchases/Delete/5
+        //delete product
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -209,6 +214,9 @@ namespace IBMS.Controllers
             }
 
             await _context.SaveChangesAsync();
+
+            TempData["AlertMessage"] = "Purchase removed successfully.";
+            TempData["AlertType"] = "danger";
             return RedirectToAction(nameof(Index));
         }
 

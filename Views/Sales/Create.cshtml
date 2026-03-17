@@ -7,38 +7,25 @@
 
     <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-    <!-- CUSTOMER -->
     <div class="mb-3">
         <label class="form-label">Customer</label>
-        <select asp-for="CustomerId"
-                asp-items="Model.CustomerList"
-                class="form-select">
+        <select asp-for="CustomerId"asp-items="Model.CustomerList"class="form-select">
             <option value="">-- Select Customer --</option>
         </select>
     </div>
 
-    <!-- PRODUCT -->
     <div class="mb-3">
         <label class="form-label">Product</label>
-        <select asp-for="ProductId"
-                asp-items="Model.ProductList"
-                class="form-select"
-                id="ProductId">
+        <select asp-for="ProductId"asp-items="Model.ProductList"class="form-select"id="ProductId">
             <option value="">-- Select Product --</option>
         </select>
     </div>
 
-    <!-- QUANTITY -->
     <div class="mb-3">
         <label class="form-label">Quantity</label>
-        <input asp-for="Quantity"
-               type="number"
-               min="1"
-               class="form-control"
-               id="Quantity" />
+        <input asp-for="Quantity"type="number"min="1"class="form-control"id="Quantity" />
     </div>
 
-    <!-- DISPLAY ONLY (NOT POSTED) -->
     <div class="mb-3">
         <label class="form-label">Total Amount</label>
         <input class="form-control" readonly id="TotalAmount" />

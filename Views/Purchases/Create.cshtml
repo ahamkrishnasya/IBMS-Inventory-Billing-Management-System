@@ -7,19 +7,14 @@
 
     <div class="mb-3">
         <label>Supplier</label>
-        <select asp-for="SupplierId"
-                asp-items="Model.SupplierList"
-                class="form-select">
+        <select asp-for="SupplierId"asp-items="Model.SupplierList"class="form-select">
             <option value="">-- Select Supplier --</option>
         </select>
     </div>
 
     <div class="mb-3">
         <label>Product</label>
-        <select asp-for="ProductId"
-                asp-items="Model.ProductList"
-                class="form-select"
-                id="ProductId">
+        <select asp-for="ProductId"asp-items="Model.ProductList"class="form-select"id="ProductId">
             <option value="">-- Select Product --</option>
         </select>
     </div>
@@ -36,13 +31,11 @@
 
     <div class="mb-3">
         <label>Total</label>
-        <input asp-for="TotalAmount"
-               class="form-control"
-               id="TotalAmount"
-               readonly />
+        <input asp-for="TotalAmount"class="form-control"id="TotalAmount"readonly />
     </div>
 
     <button type="submit" class="btn btn-dark">Save</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Back</a>
 </form>
 
 @section Scripts {

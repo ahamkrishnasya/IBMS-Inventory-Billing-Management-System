@@ -16,12 +16,14 @@ namespace IBMS.Controllers
             _context = context;
         }
 
+        //get customers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Customers.ToListAsync());
         }
 
+        //get customers by id
         [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
@@ -35,13 +37,14 @@ namespace IBMS.Controllers
             return View(customer);
         }
 
-        // ===================== CREATE (GET) =====================
+        //add customers get
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // ===================== CREATE (POST) =====================
+        //add customer post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Customer customer)
@@ -52,13 +55,14 @@ namespace IBMS.Controllers
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
 
-            TempData["AlertMessage"] = "Customer created successfully.";
+            TempData["AlertMessage"] = "Customer added successfully.";
             TempData["AlertType"] = "success";
 
             return RedirectToAction(nameof(Index));
         }
 
-        // ===================== EDIT (GET) =====================
+        //edit customer get
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -69,7 +73,7 @@ namespace IBMS.Controllers
             return View(customer);
         }
 
-        // ===================== EDIT (POST) =====================
+        //edit customer post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Customer customer)
@@ -96,7 +100,7 @@ namespace IBMS.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ===================== DELETE (GLOBAL MODAL) =====================
+        //delete customer
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -108,14 +112,14 @@ namespace IBMS.Controllers
                 _context.Customers.Remove(customer);
                 await _context.SaveChangesAsync();
 
-                TempData["AlertMessage"] = "Customer deleted successfully.";
+                TempData["AlertMessage"] = "Customer removed successfully.";
                 TempData["AlertType"] = "danger";
             }
 
             return RedirectToAction(nameof(Index));
         }
 
-        // ===================== EXISTS =====================
+        //customer exit
         private bool CustomerExists(int id)
         {
             return _context.Customers.Any(e => e.CustomerId == id);

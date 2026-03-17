@@ -21,13 +21,15 @@ namespace IBMS.Controllers
             _context = context;
         }
 
-        // GET: Suppliers
+        //get supplier
+        [HttpGet]   
         public async Task<IActionResult> Index()
         {
             return View(await _context.Suppliers.ToListAsync());
         }
 
-        // GET: Suppliers/Details/5
+        //get supplier by id
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -45,15 +47,14 @@ namespace IBMS.Controllers
             return View(supplier);
         }
 
-        // GET: Suppliers/Create
+        //add supplier get
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Suppliers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //add supplier post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("SupplierId,SupplierName,ContactNumber,Email,Address")] Supplier supplier)
@@ -62,12 +63,16 @@ namespace IBMS.Controllers
             {
                 _context.Add(supplier);
                 await _context.SaveChangesAsync();
+
+                TempData["AlertMessage"] = "Supplier added successfully.";
+                TempData["AlertType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
             return View(supplier);
         }
 
-        // GET: Suppliers/Edit/5
+        //edit supplier get
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -83,9 +88,7 @@ namespace IBMS.Controllers
             return View(supplier);
         }
 
-        // POST: Suppliers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //edit supplier post 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("SupplierId,SupplierName,ContactNumber,Email,Address")] Supplier supplier)
@@ -100,6 +103,9 @@ namespace IBMS.Controllers
                 try
                 {
                     _context.Update(supplier);
+
+                    TempData["AlertMessage"] = "Supplier added successfully.";
+                    TempData["AlertType"] = "success";
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -118,7 +124,7 @@ namespace IBMS.Controllers
             return View(supplier);
         }
 
-        // GET: Suppliers/Delete/5
+        //
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -136,7 +142,7 @@ namespace IBMS.Controllers
             return View(supplier);
         }
 
-        // POST: Suppliers/Delete/5
+        //delete supplier
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -148,9 +154,13 @@ namespace IBMS.Controllers
             }
 
             await _context.SaveChangesAsync();
+
+            TempData["AlertMessage"] = "Supplier removed successfully.";
+            TempData["AlertType"] = "danger";
             return RedirectToAction(nameof(Index));
         }
 
+        //supplier exist
         private bool SupplierExists(int id)
         {
             return _context.Suppliers.Any(e => e.SupplierId == id);

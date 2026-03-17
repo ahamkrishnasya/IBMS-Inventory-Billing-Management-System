@@ -16,26 +16,22 @@ public class UsersController : Controller
         _roleManager = roleManager;
     }
 
-    // =========================
-    // LIST USERS
-    // =========================
+    //list users
+    [HttpGet]
     public IActionResult Index()
     {
         return View(_userManager.Users.ToList());
     }
 
-    // =========================
-    // CREATE USER (GET)
-    // =========================
+    //add user get
+    [HttpGet]
     public IActionResult Create()
     {
-        ViewBag.Roles = _roleManager.Roles.ToList(); // ✅ REQUIRED
+        ViewBag.Roles = _roleManager.Roles.ToList(); 
         return View();
     }
 
-    // =========================
-    // CREATE USER (POST)
-    // =========================
+    //add user post
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(string email, string password, string role)
@@ -43,7 +39,7 @@ public class UsersController : Controller
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
         {
             ModelState.AddModelError("", "Email and password are required");
-            ViewBag.Roles = _roleManager.Roles.ToList(); // ✅ REQUIRED
+            ViewBag.Roles = _roleManager.Roles.ToList();
             return View();
         }
 
@@ -61,7 +57,7 @@ public class UsersController : Controller
             foreach (var error in result.Errors)
                 ModelState.AddModelError("", error.Description);
 
-            ViewBag.Roles = _roleManager.Roles.ToList(); // ✅ REQUIRED
+            ViewBag.Roles = _roleManager.Roles.ToList();
             return View();
         }
 
@@ -71,22 +67,17 @@ public class UsersController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // =========================
-    // ACTIVATE / DEACTIVATE
-    // =========================
+    //activate/inactive user
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ToggleStatus(string id)
     {
-        // target user
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
             return NotFound();
 
-        // current logged-in user
         var currentUserId = _userManager.GetUserId(User);
 
-        // 🚫 PREVENT SELF DEACTIVATION
         if (user.Id == currentUserId)
         {
             TempData["AlertType"] = "warning";
@@ -94,7 +85,7 @@ public class UsersController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        // toggle active / inactive
+        //toggle active/inactive
         user.LockoutEnd =
             user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.Now
                 ? null
