@@ -75,8 +75,6 @@ namespace IBMS.Controllers
                     .ToDictionary(p => p.ProductId, p => p.UnitPrice)
             };
 
-            TempData["AlertMessage"] = "Purchase created successfully.";
-            TempData["AlertType"] = "success";
             return View(data);
         }
 
@@ -116,6 +114,9 @@ namespace IBMS.Controllers
             }
 
             await _context.SaveChangesAsync();
+
+            TempData["AlertMessage"] = "Purchase created successfully.";
+            TempData["AlertType"] = "success";
             return RedirectToAction(nameof(Index));
         }
 
