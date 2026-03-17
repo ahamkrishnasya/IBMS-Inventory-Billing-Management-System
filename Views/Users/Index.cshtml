@@ -7,15 +7,8 @@
 <h2 class="mb-3">Users</h2>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <a asp-action="Create" class="btn btn-dark">
-        Create User
-    </a>
-
-    <!-- GLOBAL SEARCH -->
-    <input type="text"
-           id="tableSearch"
-           class="form-control w-25"
-           placeholder="Search users..." />
+    <a asp-action="Create" class="btn btn-dark">Create User</a>
+    <input type="text"id="tableSearch"class="form-control w-25"placeholder="Search users..." />
 </div>
 
 <table class="table table-bordered table-striped align-middle" id="dataTable">
@@ -46,23 +39,16 @@
                     }
                 </td>
                 <td class="text-nowrap">
-                    <form asp-action="ToggleStatus"
-                          method="post"
-                          class="d-inline">
+                    <form asp-action="ToggleStatus"method="post"class="d-inline">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@user.Id" />
-
                         @if (isInactive)
                         {
-                            <button class="btn btn-sm btn-success">
-                                Activate
-                            </button>
+                            <button class="btn btn-sm btn-success">Activate</button>
                         }
                         else
                         {
-                            <button class="btn btn-sm btn-warning">
-                                Deactivate
-                            </button>
+                            <button class="btn btn-sm btn-warning">Deactivate</button>
                         }
                     </form>
                 </td>
@@ -72,9 +58,6 @@
 </table>
 
 @section Scripts {
-    <!-- ONE GLOBAL SEARCH -->
     <script src="~/js/global-search.js"></script>
-
-    <!-- ONE GLOBAL SORT -->
     <script src="~/js/global-sort.js"></script>
 }

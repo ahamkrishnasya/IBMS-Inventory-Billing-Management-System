@@ -7,14 +7,8 @@
 <h2 class="mb-3">Purchases</h2>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <a asp-action="Create" class="btn btn-dark">
-        Add Purchase
-    </a>
-
-    <input type="text"
-           id="tableSearch"
-           class="form-control w-25"
-           placeholder="Search purchases..." />
+    <a asp-action="Create" class="btn btn-dark">Add Purchase</a>
+    <input type="text"id="tableSearch"class="form-control w-25"placeholder="Search purchases..." />
 </div>
 
 <table class="table table-bordered table-striped align-middle" id="dataTable">
@@ -39,25 +33,11 @@
                 <td>@item.Product.ProductName</td>
                 <td class="text-nowrap">
                     <div class="d-flex gap-2">
-                        <a asp-action="Details"
-                           asp-route-id="@item.PurchaseId"
-                           class="btn btn-sm btn-info">
-                            Details
-                        </a>
-
-                        <a asp-action="Edit"
-                           asp-route-id="@item.PurchaseId"
-                           class="btn btn-sm btn-warning">
-                            Edit
-                        </a>
-
-                        <button class="btn btn-sm btn-danger"
-                                data-bs-toggle="modal"
-                                data-bs-target="#globalDeleteModal"
-                                data-id="@item.PurchaseId"
-                                data-name="@item.Product.ProductName"
-                                data-action="@Url.Action("DeleteConfirmed", "Purchases")">
-                            Delete
+                        <a asp-action="Details"asp-route-id="@item.PurchaseId"class="btn btn-sm btn-info">Details</a>
+                        <a asp-action="Edit"asp-route-id="@item.PurchaseId"class="btn btn-sm btn-warning">Edit</a>
+                        <button class="btn btn-sm btn-danger"data-bs-toggle="modal"data-bs-target="#globalDeleteModal"
+                                data-id="@item.PurchaseId"data-name="@item.Product.ProductName"
+                                data-action="@Url.Action("DeleteConfirmed", "Purchases")">Delete
                         </button>
                     </div>
                 </td>

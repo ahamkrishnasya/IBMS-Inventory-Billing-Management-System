@@ -16,13 +16,15 @@ namespace IBMS.Controllers
             _context = context;
         }
 
-        // INDEX
+        //get products
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Products.ToListAsync());
         }
 
-        // DETAILS
+        //get product by id
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == id);
@@ -30,13 +32,14 @@ namespace IBMS.Controllers
             return View(product);
         }
 
-        // CREATE (GET)
+        //add product get
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // CREATE (POST)
+        //add product post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Product product)
@@ -52,10 +55,14 @@ namespace IBMS.Controllers
             });
 
             await _context.SaveChangesAsync();
+
+            TempData["AlertMessage"] = "Product added successfully.";
+            TempData["AlertType"] = "success";
+
             return RedirectToAction(nameof(Index));
         }
 
-        // EDIT (GET)
+        //edit product get
         public async Task<IActionResult> Edit(int id)
         {
             var product = await _context.Products.FindAsync(id);
@@ -63,17 +70,20 @@ namespace IBMS.Controllers
             return View(product);
         }
 
-        // EDIT (POST)
+        //edit product post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Product product)
         {
             _context.Update(product);
             await _context.SaveChangesAsync();
+
+            TempData["AlertMessage"] = "Product updated successfully.";
+            TempData["AlertType"] = "success";
             return RedirectToAction(nameof(Index));
         }
 
-        // DELETE (POST – USED BY MODAL)
+        //delete product
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -83,6 +93,9 @@ namespace IBMS.Controllers
                 _context.Products.Remove(product);
 
             await _context.SaveChangesAsync();
+
+            TempData["AlertMessage"] = "Product removed successfully.";
+            TempData["AlertType"] = "danger";
             return RedirectToAction(nameof(Index));
         }
     }

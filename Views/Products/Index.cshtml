@@ -7,11 +7,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <a asp-action="Create" class="btn btn-dark">Add Product</a>
-
-    <input type="text"
-           id="tableSearch"
-           class="form-control w-25"
-           placeholder="Search products..." />
+    <input type="text"id="tableSearch"class="form-control w-25"placeholder="Search products..." />
 </div>
 
 <table class="table table-bordered table-striped align-middle" id="dataTable">
@@ -38,15 +34,9 @@
                     <div class="d-flex gap-2">
                         <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-sm btn-info">Details</a>
                         <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-sm btn-warning">Edit</a>
-
-                        <button type="button"
-                                class="btn btn-sm btn-danger"
-                                data-bs-toggle="modal"
-                                data-bs-target="#globalDeleteModal"
-                                data-id="@item.ProductId"
-                                data-name="@item.ProductName"
-                                data-action="@Url.Action("DeleteConfirmed", "Products")">
-                            Delete
+                        <button type="button"class="btn btn-sm btn-danger"data-bs-toggle="modal"
+                                data-bs-target="#globalDeleteModal"data-id="@item.ProductId"
+                                data-name="@item.ProductName"data-action="@Url.Action("DeleteConfirmed", "Products")">Delete
                         </button>
                     </div>
                 </td>

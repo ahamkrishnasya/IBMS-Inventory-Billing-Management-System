@@ -25,15 +25,7 @@
             <dd class="col-sm-8">@Model.Product.ProductName</dd>
         </dl>
 
-        <a asp-action="Edit"
-           asp-route-id="@Model.PurchaseId"
-           class="btn btn-warning">
-            Edit
-        </a>
-
-        <a asp-action="Index"
-           class="btn btn-secondary ms-2">
-            Back
-        </a>
+        <a asp-action="Edit"asp-route-id="@Model.PurchaseId"class="btn btn-warning">Edit</a>
+        <a asp-action="Index"class="btn btn-secondary ms-2">Back</a>
     </div>
 </div>

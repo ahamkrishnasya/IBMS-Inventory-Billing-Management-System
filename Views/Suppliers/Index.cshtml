@@ -7,15 +7,8 @@
 <h2 class="mb-3">Suppliers</h2>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <a class="btn btn-dark" asp-action="Create">
-        Add New
-    </a>
-
-    <!-- GLOBAL SEARCH -->
-    <input type="text"
-           id="tableSearch"
-           class="form-control w-25"
-           placeholder="Search suppliers..." />
+    <a class="btn btn-dark" asp-action="Create">Add New</a>
+    <input type="text"id="tableSearch"class="form-control w-25"placeholder="Search suppliers..." />
 </div>
 
 <table class="table table-bordered table-striped align-middle" id="dataTable">
@@ -38,25 +31,11 @@
                 <td>@item.Address</td>
                 <td class="text-nowrap">
                     <div class="d-flex gap-2">
-                        <a asp-action="Details"
-                           asp-route-id="@item.SupplierId"
-                           class="btn btn-sm btn-info">
-                            Details
-                        </a>
-
-                        <a asp-action="Edit"
-                           asp-route-id="@item.SupplierId"
-                           class="btn btn-sm btn-warning">
-                            Edit
-                        </a>
-
-                        <button class="btn btn-sm btn-danger"
-                                data-bs-toggle="modal"
-                                data-bs-target="#globalDeleteModal"
-                                data-id="@item.SupplierId"
-                                data-name="@item.SupplierName"
-                                data-action="@Url.Action("DeleteConfirmed", "Suppliers")">
-                            Delete
+                        <a asp-action="Details"asp-route-id="@item.SupplierId"class="btn btn-sm btn-info">Details</a>
+                        <a asp-action="Edit"asp-route-id="@item.SupplierId"class="btn btn-sm btn-warning">Edit</a>
+                        <button class="btn btn-sm btn-danger"data-bs-toggle="modal"data-bs-target="#globalDeleteModal"
+                                data-id="@item.SupplierId"data-name="@item.SupplierName"
+                                data-action="@Url.Action("DeleteConfirmed", "Suppliers")">Delete
                         </button>
                     </div>
                 </td>
@@ -68,9 +47,6 @@
 <partial name="_DeleteModal" />
 
 @section Scripts {
-    <!-- ONE GLOBAL SEARCH -->
     <script src="~/js/global-search.js"></script>
-
-    <!-- ONE GLOBAL SORT -->
     <script src="~/js/global-sort.js"></script>
 }

@@ -7,14 +7,8 @@
 <h2 class="mb-3">Customers</h2>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <a asp-action="Create" class="btn btn-dark">
-        Add Customer
-    </a>
-
-    <input type="text"
-           id="tableSearch"
-           class="form-control w-25"
-           placeholder="Search customers..." />
+    <a asp-action="Create" class="btn btn-dark">Add Customer</a>
+    <input type="text"id="tableSearch"class="form-control w-25"placeholder="Search customers..." />
 </div>
 
 <table class="table table-bordered table-striped align-middle" id="dataTable">
@@ -37,25 +31,11 @@
                 <td>@item.Address</td>
                 <td class="text-nowrap">
                     <div class="d-flex gap-2">
-                        <a asp-action="Details"
-                           asp-route-id="@item.CustomerId"
-                           class="btn btn-sm btn-info">
-                            Details
-                        </a>
-
-                        <a asp-action="Edit"
-                           asp-route-id="@item.CustomerId"
-                           class="btn btn-sm btn-warning">
-                            Edit
-                        </a>
-
-                        <button class="btn btn-sm btn-danger"
-                                data-bs-toggle="modal"
-                                data-bs-target="#globalDeleteModal"
-                                data-id="@item.CustomerId"
-                                data-name="@item.CustomerName"
-                                data-action="@Url.Action("DeleteConfirmed", "Customers")">
-                            Delete
+                        <a asp-action="Details"asp-route-id="@item.CustomerId"class="btn btn-sm btn-info">Details</a>
+                        <a asp-action="Edit"asp-route-id="@item.CustomerId"class="btn btn-sm btn-warning">Edit</a>
+                        <button class="btn btn-sm btn-danger"data-bs-toggle="modal"data-bs-target="#globalDeleteModal"
+                                data-id="@item.CustomerId"data-name="@item.CustomerName"
+                                data-action="@Url.Action("DeleteConfirmed", "Customers")">Delete
                         </button>
                     </div>
                 </td>

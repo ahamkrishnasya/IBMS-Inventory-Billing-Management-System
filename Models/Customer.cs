@@ -10,8 +10,10 @@ namespace IBMS.Models
         [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters")]
         public string CustomerName { get; set; }
 
-        [Required(ErrorMessage = "Contact number is required")]
-        [Phone(ErrorMessage = "Enter a valid contact number")]
+        [Required]
+        [Phone]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Mobile number must be exactly 10 digits.")]
+        [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Mobile number must contain exactly 10 digits.")]
         public string ContactNumber { get; set; }
 
         [Required(ErrorMessage = "Email is required")]

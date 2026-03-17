@@ -18,7 +18,8 @@ namespace IBMS.Controllers
             _context = context;
         }
 
-        // ================= INDEX =================
+        //get sales
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var sales = await _context.Sales
@@ -30,7 +31,8 @@ namespace IBMS.Controllers
             return View(sales);
         }
 
-        // ================= DETAILS =================
+        //get sale by id
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             var sale = await _context.Sales
@@ -44,7 +46,8 @@ namespace IBMS.Controllers
             return View(sale);
         }
 
-        // ================= CREATE (GET) =================
+        //add sale get
+        [HttpGet]
         public IActionResult Create()
         {
             return View(new SaleDto
@@ -71,7 +74,7 @@ namespace IBMS.Controllers
             });
         }
 
-        // ================= CREATE (POST) =================
+        //add sale post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SaleDto dto)
@@ -110,10 +113,13 @@ namespace IBMS.Controllers
 
             await _context.SaveChangesAsync();
 
+            TempData["AlertMessage"] = "Sales added successfully.";
+            TempData["AlertType"] = "success";
             return RedirectToAction(nameof(Index));
         }
 
-        // ================= EDIT (GET) =================
+        //edit sale get
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var sale = await _context.Sales.FindAsync(id);
@@ -153,7 +159,7 @@ namespace IBMS.Controllers
             });
         }
 
-        // ================= EDIT (POST) =================
+        //edit sale post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(SaleDto dto)
@@ -195,9 +201,12 @@ namespace IBMS.Controllers
 
             await _context.SaveChangesAsync();
 
+            TempData["AlertMessage"] = "Sales updated successfully.";
+            TempData["AlertType"] = "success";
             return RedirectToAction(nameof(Index));
         }
-        // ================= DELETE (POST ONLY – MODAL) =================
+
+        //delete sale
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -221,6 +230,8 @@ namespace IBMS.Controllers
             _context.Sales.Remove(sale);
             await _context.SaveChangesAsync();
 
+            TempData["AlertMessage"] = "Sales removed successfully.";
+            TempData["AlertType"] = "danger";
             return RedirectToAction(nameof(Index));
         }
 
