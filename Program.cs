@@ -58,14 +58,17 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
+    string[] roles = new[] { "Admin", "Manager", "Staff" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
     string adminEmail = "admin@ibms.com";
     string adminPassword = "Admin@123";
-    string adminRole = "Admin";
-
-    if (!await roleManager.RoleExistsAsync(adminRole))
-    {
-        await roleManager.CreateAsync(new IdentityRole(adminRole));
-    }
 
     var user = await userManager.FindByEmailAsync(adminEmail);
 
@@ -79,7 +82,12 @@ using (var scope = app.Services.CreateScope())
         };
 
         await userManager.CreateAsync(user, adminPassword);
-        await userManager.AddToRoleAsync(user, adminRole);
+    }
+
+    // ? Ensure admin has Admin role
+    if (!await userManager.IsInRoleAsync(user, "Admin"))
+    {
+        await userManager.AddToRoleAsync(user, "Admin");
     }
 }
 app.Run();

@@ -15,10 +15,10 @@
             <dd class="col-sm-8">@Model.Category</dd>
 
             <dt class="col-sm-4">Price</dt>
-            <dd class="col-sm-8">@Model.UnitPrice</dd>
+            <dd class="col-sm-8">@Model.UnitPrice.ToString("N2", new System.Globalization.CultureInfo("en-IN"))</dd>
 
             <dt class="col-sm-4">Quantity</dt>
-            <dd class="col-sm-8">@Model.Quantity</dd>
+            <dd class="col-sm-8">@Model.Quantity.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</dd>
 
             <dt class="col-sm-4">Tax Rate</dt>
             <dd class="col-sm-8">@Model.TaxRate</dd>

@@ -27,8 +27,8 @@
                 <td>@item.PurchaseDate.ToString("dd/MM/yyyy")</td>
                 <td>@item.Supplier.SupplierName</td>
                 <td>@item.Product.ProductName</td>
-                <td>@item.Quantity</td>
-                <td>@item.TotalAmount</td>
+                <td>@item.Quantity.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</td>
+                <td>@item.TotalAmount.ToString("N2", new System.Globalization.CultureInfo("en-IN"))</td>
             </tr>
         }
     </tbody>

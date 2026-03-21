@@ -115,7 +115,7 @@ namespace IBMS.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["AlertMessage"] = "Purchase created successfully.";
+            TempData["AlertMessage"] = "Purchase added successfully.";
             TempData["AlertType"] = "success";
             return RedirectToAction(nameof(Index));
         }
@@ -180,27 +180,6 @@ namespace IBMS.Controllers
             TempData["AlertMessage"] = "Purchase updated successfully.";
             TempData["AlertType"] = "success";
             return RedirectToAction(nameof(Index));
-        }
-
-
-        //
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var purchase = await _context.Purchases
-                .Include(p => p.Product)
-                .Include(p => p.Supplier)
-                .FirstOrDefaultAsync(m => m.PurchaseId == id);
-            if (purchase == null)
-            {
-                return NotFound();
-            }
-
-            return View(purchase);
         }
 
         //delete product

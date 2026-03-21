@@ -10,13 +10,13 @@
     <div class="card-body">
         <dl class="row">
             <dt class="col-sm-4">Quantity</dt>
-            <dd class="col-sm-8">@Model.Quantity</dd>
+            <dd class="col-sm-8">@Model.Quantity.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</dd>
 
             <dt class="col-sm-4">Purchase Date</dt>
             <dd class="col-sm-8">@Model.PurchaseDate.ToString("dd/MM/yyyy")</dd>
 
             <dt class="col-sm-4">Total Amount</dt>
-            <dd class="col-sm-8">@Model.TotalAmount</dd>
+            <dd class="col-sm-8">@Model.TotalAmount.ToString("N2", new System.Globalization.CultureInfo("en-IN"))</dd>
 
             <dt class="col-sm-4">Supplier</dt>
             <dd class="col-sm-8">@Model.Supplier.SupplierName</dd>

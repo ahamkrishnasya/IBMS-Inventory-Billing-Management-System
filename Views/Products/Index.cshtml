@@ -27,8 +27,8 @@
             <tr>
                 <td>@item.ProductName</td>
                 <td>@item.Category</td>
-                <td>@item.UnitPrice</td>
-                <td>@item.Quantity</td>
+                <td>@item.UnitPrice.ToString("N2", new System.Globalization.CultureInfo("en-IN"))</td>
+                <td>@item.Quantity.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</td>
                 <td>@item.TaxRate</td>
                 <td class="text-nowrap">
                     <div class="d-flex gap-2">

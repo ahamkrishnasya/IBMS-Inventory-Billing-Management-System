@@ -23,8 +23,8 @@
         {
             <tr>
                 <td>@item.Product.ProductName</td>
-                <td>@item.CurrentStock</td>
-                <td>@item.ReorderLevel</td>
+                <td>@item.CurrentStock.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</td>
+                <td>@item.ReorderLevel.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</td>
             </tr>
         }
     </tbody>

@@ -29,8 +29,8 @@
                 <td>@s.SaleDate.ToString("dd/MM/yyyy")</td>
                 <td>@s.Customer.CustomerName</td>
                 <td>@s.Product.ProductName</td>
-                <td>@s.Quantity</td>
-                <td>@s.NetAmount</td>
+                <td>@s.Quantity.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</td>
+                <td>@s.NetAmount.ToString("N2", new System.Globalization.CultureInfo("en-IN"))</td>
                 <td class="text-nowrap">
                     <div class="d-flex gap-2">
                         <a asp-action="Details"asp-route-id="@s.SaleId"class="btn btn-sm btn-info">Details</a>

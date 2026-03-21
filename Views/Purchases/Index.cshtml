@@ -26,9 +26,9 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.Quantity</td>
+                <td>@item.Quantity.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</td>
                 <td>@item.PurchaseDate.ToString("dd/MM/yyyy")</td>
-                <td>@item.TotalAmount</td>
+                <td>@item.TotalAmount.ToString("N2", new System.Globalization.CultureInfo("en-IN"))</td>
                 <td>@item.Supplier.SupplierName</td>
                 <td>@item.Product.ProductName</td>
                 <td class="text-nowrap">
@@ -37,7 +37,8 @@
                         <a asp-action="Edit"asp-route-id="@item.PurchaseId"class="btn btn-sm btn-warning">Edit</a>
                         <button class="btn btn-sm btn-danger"data-bs-toggle="modal"data-bs-target="#globalDeleteModal"
                                 data-id="@item.PurchaseId"data-name="@item.Product.ProductName"
-                                data-action="@Url.Action("DeleteConfirmed", "Purchases")">Delete
+                                data-action="@Url.Action("Delete", "Purchases")">
+                            Delete
                         </button>
                     </div>
                 </td>
