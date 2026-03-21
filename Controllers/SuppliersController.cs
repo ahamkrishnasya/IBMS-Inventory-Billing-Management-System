@@ -104,7 +104,7 @@ namespace IBMS.Controllers
                 {
                     _context.Update(supplier);
 
-                    TempData["AlertMessage"] = "Supplier added successfully.";
+                    TempData["AlertMessage"] = "Supplier updated successfully.";
                     TempData["AlertType"] = "success";
                     await _context.SaveChangesAsync();
                 }
@@ -121,24 +121,6 @@ namespace IBMS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(supplier);
-        }
-
-        //
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var supplier = await _context.Suppliers
-                .FirstOrDefaultAsync(m => m.SupplierId == id);
-            if (supplier == null)
-            {
-                return NotFound();
-            }
-
             return View(supplier);
         }
 

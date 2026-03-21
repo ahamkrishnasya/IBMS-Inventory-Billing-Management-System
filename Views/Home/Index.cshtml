@@ -6,7 +6,7 @@
         <div class="card bg-primary text-white shadow">
             <div class="card-body">
                 <h6>Total Products</h6>
-                <h3>@ViewBag.TotalProducts</h3>
+                <h3>@ViewBag.TotalProducts.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</h3>
             </div>
         </div>
     </div>
@@ -15,7 +15,7 @@
         <div class="card bg-success text-white shadow">
             <div class="card-body">
                 <h6>Total Sales</h6>
-                <h3>₹ @ViewBag.TotalSales</h3>
+                <h3>₹ @ViewBag.TotalSales.ToString("N2", new System.Globalization.CultureInfo("en-IN"))</h3>
             </div>
         </div>
     </div>
@@ -24,7 +24,7 @@
         <div class="card bg-warning text-dark shadow">
             <div class="card-body">
                 <h6>Low Stock</h6>
-                <h3>@ViewBag.LowStock</h3>
+                <h3>@ViewBag.LowStock.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</h3>
             </div>
         </div>
     </div>
@@ -33,7 +33,7 @@
         <div class="card bg-dark text-white shadow">
             <div class="card-body">
                 <h6>Customers</h6>
-                <h3>@ViewBag.TotalCustomers</h3>
+                <h3>@ViewBag.TotalCustomers.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</h3>
             </div>
         </div>
     </div>

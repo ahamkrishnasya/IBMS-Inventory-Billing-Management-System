@@ -19,16 +19,16 @@
             <dd class="col-sm-9">@Model.Product.ProductName</dd>
 
             <dt class="col-sm-3">Quantity</dt>
-            <dd class="col-sm-9">@Model.Quantity</dd>
+            <dd class="col-sm-9">@Model.Quantity.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</dd>
 
             <dt class="col-sm-3">Total Amount</dt>
-            <dd class="col-sm-9">@Model.TotalAmount</dd>
+            <dd class="col-sm-9">@Model.TotalAmount.ToString("N2", new System.Globalization.CultureInfo("en-IN"))</dd>
 
             <dt class="col-sm-3">Tax Amount</dt>
-            <dd class="col-sm-9">@Model.TaxAmount</dd>
+            <dd class="col-sm-9">@Model.TaxAmount.ToString("N2", new System.Globalization.CultureInfo("en-IN"))</dd>
 
             <dt class="col-sm-3">Net Amount</dt>
-            <dd class="col-sm-9">@Model.NetAmount</dd>
+            <dd class="col-sm-9">@Model.NetAmount.ToString("N2", new System.Globalization.CultureInfo("en-IN"))</dd>
         </dl>
         <a asp-action="Edit" asp-route-id="@Model.SaleId" class="btn btn-warning">Edit</a>
         <a asp-action="Index" class="btn btn-secondary ms-2">Back</a>

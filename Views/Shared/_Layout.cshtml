@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="~/css/bootstrap-5.3.8-dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 
-
     <style>
         body {
             overflow-x: hidden;
@@ -24,7 +23,7 @@
             background: #212529;
             color: #fff;
             transition: width .3s ease;
-            overflow-y: auto;
+            overflow-y: hidden; /* removed scrollbar */
             z-index: 1030;
         }
 
@@ -41,16 +40,13 @@
                 gap: 8px;
             }
 
-                .sidebar .nav-link:hover {
-                    background: #343a40;
-                }
+            .sidebar.collapsed .nav-link {
+                justify-content: center;
+            }
 
-                .sidebar .nav-link:focus,
-                .sidebar .nav-link:active {
-                    background: none !important;
-                    outline: none !important;
-                    box-shadow: none !important;
-                }
+            .sidebar .nav-link:hover {
+                background: #343a40;
+            }
 
             .sidebar span {
                 transition: opacity .2s ease;
@@ -62,7 +58,6 @@
                 overflow: hidden;
             }
 
-        /* menu btn */
         #sidebarToggle {
             width: 100%;
             display: flex;
@@ -72,12 +67,6 @@
             border: 1px solid #6c757d;
             color: #fff;
         }
-
-            #sidebarToggle:focus,
-            #sidebarToggle:active {
-                outline: none !important;
-                box-shadow: none !important;
-            }
 
         .report-arrow {
             margin-left: auto;
@@ -131,55 +120,73 @@
 
                 <button id="sidebarToggle" class="btn btn-sm mb-3">☰ <span>Menu</span></button>
 
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Products" asp-action="Index">📦 <span>Products</span></a>
-                </li>
+                @*admin & manager*@
+                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Products" asp-action="Index">📦 <span>Products</span></a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Customers" asp-action="Index">👥 <span>Customers</span></a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Customers" asp-action="Index">👥 <span>Customers</span></a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Sales" asp-action="Index">💰 <span>Sales</span></a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Purchases" asp-action="Index">🛒 <span>Purchases</span></a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Purchases" asp-action="Index">🛒 <span>Purchases</span></a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Suppliers" asp-action="Index">🚚 <span>Suppliers</span></a>
+                    </li>
+                }
+                @*all roles*@
+                @if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Staff"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Sales" asp-action="Index">💰 <span>Sales</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#reportsMenu">
+                            📑 <span>Reports</span>
+                            <span class="report-arrow">▾</span>
+                        </a>
 
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Suppliers" asp-action="Index">🚚 <span>Suppliers</span></a>
-                </li>
+                        <div class="collapse ps-3" id="reportsMenu">
+                            <a class="nav-link" asp-controller="Reports" asp-action="SalesReport">
+                                📊 <span>Sales Report</span>
+                            </a>
 
-                <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#reportsMenu" aria-expanded="false">
-                        📑 <span>Reports</span>
-                        <span class="report-arrow">▾</span>
-                    </a>
+                            <a class="nav-link" asp-controller="Reports" asp-action="PurchaseReport">
+                                🧾 <span>Purchase Report</span>
+                            </a>
 
-                    <div class="collapse ps-3" id="reportsMenu">
-                        <a class="nav-link" asp-controller="Reports" asp-action="SalesReport"><span>Sales Report</span></a>
-                        <a class="nav-link" asp-controller="Reports" asp-action="PurchaseReport"><span>Purchase Report</span></a>
-                        <a class="nav-link" asp-controller="Reports" asp-action="InventoryReport"><span>Inventory Report</span></a>
-                    </div>
-                </li>
+                            <a class="nav-link" asp-controller="Reports" asp-action="InventoryReport">
+                                📦 <span>Inventory Report</span>
+                            </a>
+                        </div>
+                    </li>
+                }
 
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Users" asp-action="Index">🧑‍💻 <span>Users</span></a>
-                </li>
+                @* only admin *@
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Users" asp-action="Index">🧑‍💻 <span>Users</span></a>
+                    </li>
+                }
+
             </ul>
         </aside>
-
         <div class="content-wrapper">
 
             <div class="top-bar d-flex justify-content-between align-items-center px-3">
-                <a asp-controller="Home" asp-action="Index"class="fw-bold text-decoration-none text-dark fs-5">IBMS</a>
+                <a asp-controller="Home" asp-action="Index" class="fw-bold text-decoration-none text-dark fs-5">IBMS</a>
 
                 <div class="d-flex align-items-center gap-2">
                     <span class="fw-semibold">@User.Identity.Name</span>
 
                     <form asp-area="Identity" asp-page="/Account/Logout" method="post">
-                        <button type="submit"class="btn btn-link text-danger text-decoration-none p-0">🚪 Logout</button>
+                        <button type="submit" class="btn btn-link text-danger text-decoration-none p-0">🚪 Logout</button>
                     </form>
                 </div>
             </div>
@@ -203,14 +210,30 @@
         document.addEventListener("DOMContentLoaded", () => {
             const sidebar = document.getElementById("sidebar");
             const toggle = document.getElementById("sidebarToggle");
+            const reportsMenu = document.getElementById("reportsMenu");
 
             toggle.addEventListener("mousedown", e => e.preventDefault());
 
             toggle.addEventListener("click", () => {
                 sidebar.classList.toggle("collapsed");
+
+                // Auto close reports when collapsing
+                if (sidebar.classList.contains("collapsed")) {
+                    const bsCollapse = bootstrap.Collapse.getInstance(reportsMenu);
+                    if (bsCollapse) {
+                        bsCollapse.hide();
+                    }
+                }
+            });
+
+            // Enable tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (el) {
+                return new bootstrap.Tooltip(el);
             });
         });
 
+        // Auto hide alert
         setTimeout(() => {
             const alert = document.getElementById("autoAlert");
             if (alert) {
@@ -220,6 +243,7 @@
         }, 2500);
     </script>
 
+    <!-- ✅ IMPORTANT FIX (your error) -->
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
