@@ -1,0 +1,57 @@
+﻿@model IEnumerable<IBMS.Models.Invoice>
+
+<h2 class="mb-3">Invoices</h2>
+
+<div class="d-flex justify-content-between mb-3">
+    <a asp-action="Create" class="btn btn-dark">Add Invoice</a>
+    <input type="text" id="tableSearch" class="form-control w-25" placeholder="Search invoices..." />
+</div>
+
+<table class="table table-bordered table-striped" id="dataTable">
+    <thead class="table-dark">
+        <tr>
+            <th onclick="sortTable(0)">Sale ⬍</th>
+            <th onclick="sortTable(1)">Customer ⬍</th>
+            <th onclick="sortTable(2)">Date ⬍</th>
+            <th onclick="sortTable(3)">Payment ⬍</th>
+            <th onclick="sortTable(4)">Total ⬍</th>
+            <th style="width:180px">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>#@item.SaleId</td>
+                <td>@item.Sale?.Customer?.CustomerName</td>
+                <td>@item.InvoiceDate.ToShortDateString()</td>
+                <td>@item.PaymentMode</td>
+                <td>@item.InvoiceTotal.ToString("N2", new System.Globalization.CultureInfo("en-IN"))</td>
+
+                <td>
+                    <div class="d-flex gap-2">
+                        <a asp-action="Details" asp-route-id="@item.InvoiceId" class="btn btn-sm btn-info">Details</a>
+                        <a asp-action="Edit" asp-route-id="@item.InvoiceId" class="btn btn-sm btn-warning">Edit</a>
+
+                        <button class="btn btn-sm btn-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalDeleteModal"
+                                data-id="@item.InvoiceId"
+                                data-name="Invoice #@item.InvoiceId"
+                                data-action="@Url.Action("DeleteConfirmed", "Invoices")">
+                            Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<partial name="_DeleteModal" />
+
+@section Scripts {
+    <script src="~/js/global-search.js"></script>
+    <script src="~/js/global-sort.js"></script>
+}

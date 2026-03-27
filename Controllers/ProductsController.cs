@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBMS.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Manager")]
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -90,8 +90,14 @@ namespace IBMS.Controllers
         {
             var product = await _context.Products.FindAsync(id);
             if (product != null)
+            {
+                var stock = await _context.Stocks.FindAsync(product.ProductId);
+                if(stock != null)
+                {
+                    _context.Stocks.Remove(stock);
+                }
                 _context.Products.Remove(product);
-
+            }
             await _context.SaveChangesAsync();
 
             TempData["AlertMessage"] = "Product removed successfully.";

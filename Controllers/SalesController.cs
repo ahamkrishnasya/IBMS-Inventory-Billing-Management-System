@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBMS.Controllers
 {
-    [Authorize(Roles = "Admin,Staff")]
+    [Authorize]
     public class SalesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -227,6 +227,12 @@ namespace IBMS.Controllers
                 stock.CurrentStock += sale.Quantity;
             }
 
+            var invoice = await _context.Invoices.Where(x => x.SaleId == id).FirstOrDefaultAsync();
+
+            if(invoice != null)
+            {
+                _context.Invoices.Remove(invoice);
+            }
             _context.Sales.Remove(sale);
             await _context.SaveChangesAsync();
 

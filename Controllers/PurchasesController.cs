@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IBMS.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Manager")]
     public class PurchasesController : Controller
     {
         private readonly ApplicationDbContext _context;
