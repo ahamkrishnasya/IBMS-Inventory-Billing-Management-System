@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace IBMS.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class ReportsController : Controller
     {
         private readonly ApplicationDbContext _context;

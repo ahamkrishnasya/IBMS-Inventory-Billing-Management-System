@@ -1,0 +1,30 @@
+﻿@model IBMS.Models.Invoice
+
+<h2>Invoice Details</h2>
+
+<div class="card shadow-sm col-md-6">
+    <div class="card-body">
+        <dl class="row">
+
+            <dt class="col-sm-4">Sale</dt>
+            <dd class="col-sm-8">
+                #@Model.SaleId - @Model.Sale?.Customer?.CustomerName
+            </dd>
+
+            <dt class="col-sm-4">Date</dt>
+            <dd class="col-sm-8">@Model.InvoiceDate.ToShortDateString()</dd>
+
+            <dt class="col-sm-4">Payment Mode</dt>
+            <dd class="col-sm-8">@Model.PaymentMode</dd>
+
+            <dt class="col-sm-4">Total</dt>
+            <dd class="col-sm-8">
+                @Model.InvoiceTotal.ToString("N2", new System.Globalization.CultureInfo("en-IN"))
+            </dd>
+
+        </dl>
+
+        <a asp-action="Edit" asp-route-id="@Model.InvoiceId" class="btn btn-warning">Edit</a>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Back</a>
+    </div>
+</div>

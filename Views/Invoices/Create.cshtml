@@ -1,0 +1,59 @@
+﻿@model IBMS.Models.Invoice
+
+<h2>Create Invoice</h2>
+
+<div class="card shadow-sm col-md-6">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label>Sale</label>
+                <select asp-for="SaleId" asp-items="ViewBag.Sales"
+                        class="form-control" id="saleDropdown">
+                        <option value="">--Select Sales--</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>Invoice Date</label>
+                <input asp-for="InvoiceDate" type="date" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label>Payment Mode</label>
+                <input asp-for="PaymentMode" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label>Total Amount</label>
+                <input asp-for="InvoiceTotal" class="form-control" id="invoiceTotal" readonly />
+            </div>
+
+            <button class="btn btn-dark">Save</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">Back</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const dropdown = document.getElementById("saleDropdown");
+    const totalInput = document.getElementById("invoiceTotal");
+
+    dropdown.addEventListener("change", function () {
+
+        const selectedText = this.options[this.selectedIndex].text;
+
+        // extract amount safely
+        const match = selectedText.match(/₹([\d,\.]+)/);
+
+        if (match) {
+            totalInput.value = match[1].replace(/,/g, '');
+        } else {
+            totalInput.value = "";
+        }
+    });
+</script>
+}

@@ -23,7 +23,7 @@
             background: #212529;
             color: #fff;
             transition: width .3s ease;
-            overflow-y: hidden; /* removed scrollbar */
+            overflow-y: hidden;
             z-index: 1030;
         }
 
@@ -34,10 +34,10 @@
             .sidebar .nav-link {
                 color: #fff;
                 padding: 10px 15px;
-                white-space: nowrap;
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                gap: 10px;
+                white-space: nowrap;
             }
 
             .sidebar.collapsed .nav-link {
@@ -57,6 +57,19 @@
                 width: 0;
                 overflow: hidden;
             }
+
+        /* Tooltip */
+        .tooltip-inner {
+            background-color: #000;
+            color: #fff;
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .tooltip.bs-tooltip-end .tooltip-arrow::before {
+            border-right-color: #000 !important;
+        }
 
         #sidebarToggle {
             width: 100%;
@@ -120,67 +133,63 @@
 
                 <button id="sidebarToggle" class="btn btn-sm mb-3">☰ <span>Menu</span></button>
 
-                @*admin & manager*@
                 @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
                 {
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Products" asp-action="Index">📦 <span>Products</span></a>
+                        <a class="nav-link" asp-controller="Products" asp-action="Index" data-tooltip="Products">📦 <span>Products</span></a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Customers" asp-action="Index">👥 <span>Customers</span></a>
+                        <a class="nav-link" asp-controller="Customers" asp-action="Index" data-tooltip="Customers">👥 <span>Customers</span></a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Purchases" asp-action="Index">🛒 <span>Purchases</span></a>
+                        <a class="nav-link" asp-controller="Purchases" asp-action="Index" data-tooltip="Purchases">🛒 <span>Purchases</span></a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Suppliers" asp-action="Index">🚚 <span>Suppliers</span></a>
+                        <a class="nav-link" asp-controller="Suppliers" asp-action="Index" data-tooltip="Suppliers">🚚 <span>Suppliers</span></a>
                     </li>
                 }
-                @*all roles*@
+
                 @if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Staff"))
                 {
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Sales" asp-action="Index">💰 <span>Sales</span></a>
+                        <a class="nav-link" asp-controller="Sales" asp-action="Index" data-tooltip="Sales">💰 <span>Sales</span></a>
                     </li>
+
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#reportsMenu">
+                        <a class="nav-link" asp-controller="Invoices" asp-action="Index" data-tooltip="Invoices">🧾 <span>Invoices</span></a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#reportsMenu" data-tooltip="Reports">
                             📑 <span>Reports</span>
                             <span class="report-arrow">▾</span>
                         </a>
 
                         <div class="collapse ps-3" id="reportsMenu">
-                            <a class="nav-link" asp-controller="Reports" asp-action="SalesReport">
-                                📊 <span>Sales Report</span>
-                            </a>
-
-                            <a class="nav-link" asp-controller="Reports" asp-action="PurchaseReport">
-                                🧾 <span>Purchase Report</span>
-                            </a>
-
-                            <a class="nav-link" asp-controller="Reports" asp-action="InventoryReport">
-                                📦 <span>Inventory Report</span>
-                            </a>
+                            <a class="nav-link" asp-controller="Reports" asp-action="SalesReport" data-tooltip="Sales Report">📊 <span>Sales Report</span></a>
+                            <a class="nav-link" asp-controller="Reports" asp-action="PurchaseReport" data-tooltip="Purchase Report">🧾 <span>Purchase Report</span></a>
+                            <a class="nav-link" asp-controller="Reports" asp-action="InventoryReport" data-tooltip="Inventory Report">📦 <span>Inventory Report</span></a>
                         </div>
                     </li>
                 }
 
-                @* only admin *@
                 @if (User.IsInRole("Admin"))
                 {
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Users" asp-action="Index">🧑‍💻 <span>Users</span></a>
+                        <a class="nav-link" asp-controller="Users" asp-action="Index" data-tooltip="Users">🧑‍💻 <span>Users</span></a>
                     </li>
                 }
 
             </ul>
         </aside>
+
         <div class="content-wrapper">
 
             <div class="top-bar d-flex justify-content-between align-items-center px-3">
-                <a asp-controller="Home" asp-action="Index" class="fw-bold text-decoration-none text-dark fs-5">IBMS</a>
+                <a asp-controller="Home" asp-action="Index" class="fw-bold text-dark text-decoration-none fs-5">IBMS</a>
 
                 <div class="d-flex align-items-center gap-2">
                     <span class="fw-semibold">@User.Identity.Name</span>
@@ -208,6 +217,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+
             const sidebar = document.getElementById("sidebar");
             const toggle = document.getElementById("sidebarToggle");
             const reportsMenu = document.getElementById("reportsMenu");
@@ -217,23 +227,44 @@
             toggle.addEventListener("click", () => {
                 sidebar.classList.toggle("collapsed");
 
-                // Auto close reports when collapsing
                 if (sidebar.classList.contains("collapsed")) {
                     const bsCollapse = bootstrap.Collapse.getInstance(reportsMenu);
-                    if (bsCollapse) {
-                        bsCollapse.hide();
-                    }
+                    if (bsCollapse) bsCollapse.hide();
                 }
             });
 
-            // Enable tooltips
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (el) {
-                return new bootstrap.Tooltip(el);
+            document.querySelectorAll(".nav-link").forEach(el => {
+
+                let tooltip;
+
+                el.addEventListener("mouseenter", () => {
+                    if (!sidebar.classList.contains("collapsed")) return;
+
+                    tooltip = document.createElement("div");
+                    tooltip.className = "custom-tooltip";
+                    tooltip.innerText = el.getAttribute("data-tooltip");
+
+                    tooltip.style.position = "fixed";
+                    tooltip.style.left = "75px";
+                    tooltip.style.background = "#000";
+                    tooltip.style.color = "#fff";
+                    tooltip.style.padding = "6px 10px";
+                    tooltip.style.borderRadius = "8px";
+                    tooltip.style.fontSize = "12px";
+                    tooltip.style.zIndex = "9999";
+
+                    const rect = el.getBoundingClientRect();
+                    tooltip.style.top = rect.top + "px";
+
+                    document.body.appendChild(tooltip);
+                });
+
+                el.addEventListener("mouseleave", () => {
+                    if (tooltip) tooltip.remove();
+                });
             });
         });
 
-        // Auto hide alert
         setTimeout(() => {
             const alert = document.getElementById("autoAlert");
             if (alert) {
@@ -243,7 +274,6 @@
         }, 2500);
     </script>
 
-    <!-- ✅ IMPORTANT FIX (your error) -->
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
